@@ -8,6 +8,13 @@ module SimpleImagesDownloader
       destination
     ].freeze
 
+    REQUEST_OPTIONS = {
+      'User-Agent' => "SimpleImagesDownloader/#{SimpleImagesDownloader::VERSION}",
+      redirect: false,
+      open_timeout: 30,
+      read_timeout: 30
+    }.freeze
+
     attr_accessor(*ACCESSORS)
 
     def initialize

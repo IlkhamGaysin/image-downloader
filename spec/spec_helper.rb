@@ -12,7 +12,7 @@ end
 
 require 'bundler/setup'
 require 'simple_images_downloader'
-require 'byebug'
+require 'pry'
 require 'faker'
 require 'vcr'
 

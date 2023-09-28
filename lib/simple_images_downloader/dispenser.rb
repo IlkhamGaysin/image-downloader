@@ -3,28 +3,30 @@
 module SimpleImagesDownloader
   class Dispenser
     extend Forwardable
+    include Validatable
 
     def_delegator 'SimpleImagesDownloader::Configuration', :destination, :destination_dir
 
-    def initialize(source, remote_path)
+    def initialize(source, remote_path, validators = [DestinationValidator.new])
       @source      = source
       @remote_path = remote_path
+      @validators  = validators
     end
 
     def place
-      raise Errors::DestinationIsNotWritable, destination unless File.writable?(destination_dir)
+      validate!(destination_dir)
 
-      FileUtils.mv @source, destination
+      FileUtils.mv @source, target
     end
 
-    def destination
-      @destination ||= destination_dir + file_name
+    def target
+      @target ||= destination_dir + file_name
     end
 
     def file_name
       @file_name ||= File.basename(@source) + File.extname(@remote_path)
     end
 
-    private :destination_dir, :destination, :file_name
+    private :destination_dir, :target, :file_name
   end
 end

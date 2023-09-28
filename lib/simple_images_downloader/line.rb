@@ -2,14 +2,17 @@
 
 module SimpleImagesDownloader
   class Line
-    def initialize(string)
-      @string = string
+    include Validatable
+
+    def initialize(string, validators = [ImagePathValidator.new])
+      @string     = string
+      @validators = validators
     end
 
     def uri
       parsed_uri = URI.parse(@string)
 
-      ImagePathValidator.new(@string).validate
+      validate!(@string)
 
       parsed_uri
     rescue URI::Error

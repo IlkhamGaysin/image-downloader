@@ -1,26 +1,13 @@
 # frozen_string_literal: true
 
 RSpec.describe SimpleImagesDownloader::Downloader do
-  describe SimpleImagesDownloader::Downloader::REQUEST_OPTIONS do
-    subject(:options) { described_class }
-
-    let(:expected_value) do
-      {
-        'User-Agent' => "SimpleImagesDownloader/#{SimpleImagesDownloader::VERSION}",
-        redirect: false,
-        open_timeout: 30,
-        read_timeout: 30
-      }
-    end
-
-    it { is_expected.to eql(expected_value) }
-  end
-
   describe '#download' do
     context 'when there is redirect error', :vcr do
       let(:uri) { URI.parse('http://github.com') }
 
-      it do
+      it 'raises RedirectError', vcr: {
+        cassette_name: '/SimpleImagesDownloader_Downloader/_download/when_there_is_redirect_error/1_2_1_1'
+      } do
         expect { described_class.new(uri).download }.to raise_error(SimpleImagesDownloader::Errors::RedirectError)
       end
     end
@@ -28,7 +15,9 @@ RSpec.describe SimpleImagesDownloader::Downloader do
     context 'when there is http error', :vcr do
       let(:uri) { URI.parse('https://github.com/IlkhamGaysin/test.png') }
 
-      it do
+      it 'raises ConnectionError', vcr: {
+        cassette_name: '/SimpleImagesDownloader_Downloader/_download/when_there_is_http_error/1_2_2_1'
+      } do
         expect { described_class.new(uri).download }.to raise_error(SimpleImagesDownloader::Errors::ConnectionError)
       end
     end
@@ -83,20 +72,27 @@ RSpec.describe SimpleImagesDownloader::Downloader do
         download
       end
 
-      it do
+      it 'logs process', vcr: {
+        cassette_name: '/SimpleImagesDownloader_Downloader/_download/when_downloaded_file_is_StringIO/1_2_3_4'
+      } do
         expect { described_class.new(uri).download }
           .to output("Downloading #{uri}\nDownloading is finished\n").to_stdout
       end
     end
 
     context 'when Dispenser raises an error' do
-      let(:uri)             { URI.parse(Faker::Placeholdit.image) }
+      let(:uri) do
+        URI.parse('https://test-for-image-fetcher.s3.eu-central-1.amazonaws.com/7.5MB.jpg')
+      end
       let(:downloader)      { described_class.new(uri) }
       let(:downloaded_file) { Tempfile.new(['downloader-test', SimpleImagesDownloader::Configuration.destination]) }
       let(:dispenser)       { instance_double('SimpleImagesDownloader::Dispenser') }
 
       before do
-        allow(downloader).to receive(:downloaded_file).and_return(downloaded_file)
+        client = instance_double('SimpleImagesDownloader::Client')
+        allow(SimpleImagesDownloader::Client).to receive(:new).and_return(client)
+        allow(client).to receive(:open).and_return(downloaded_file)
+        allow(SimpleImagesDownloader::StringioToTempfile).to receive(:convert).and_return(downloaded_file)
         allow(SimpleImagesDownloader::Dispenser)
           .to receive(:new).with(an_instance_of(Tempfile), uri.path).and_return(dispenser)
         allow(dispenser).to receive(:place).and_raise(SimpleImagesDownloader::Errors::BaseError)
@@ -109,7 +105,7 @@ RSpec.describe SimpleImagesDownloader::Downloader do
       end
     end
 
-    context 'when downloaded file is Tempfile', :vcr do
+    context 'when downloaded file is Tempfile' do
       subject(:download) { described_class.new(uri).download }
 
       let(:dispenser) { instance_double('SimpleImagesDownloader::Dispenser') }
@@ -127,7 +123,9 @@ RSpec.describe SimpleImagesDownloader::Downloader do
         FileUtils.rm_rf(fixtures_path('downloader/'))
       end
 
-      it do
+      it 'calls Dispenser#place', vcr: {
+        cassette_name: '/SimpleImagesDownloader_Downloader/_download/when_downloaded_file_is_Tempfile/1_2_5_1'
+      } do
         expect(SimpleImagesDownloader::Dispenser)
           .to receive(:new).with(an_instance_of(Tempfile), uri.path).and_return(dispenser)
         expect(dispenser).to receive(:place)
@@ -135,7 +133,9 @@ RSpec.describe SimpleImagesDownloader::Downloader do
         download
       end
 
-      it 'downloads file' do
+      it 'downloads file', vcr: {
+        cassette_name: '/SimpleImagesDownloader_Downloader/_download/when_downloaded_file_is_Tempfile/downloads_file'
+      } do
         expect(File).not_to be_exist(fixtures_path('downloader/*.*'))
 
         download
@@ -145,7 +145,9 @@ RSpec.describe SimpleImagesDownloader::Downloader do
         end
       end
 
-      it do
+      it 'logs process', vcr: {
+        cassette_name: '/SimpleImagesDownloader_Downloader/_download/when_downloaded_file_is_Tempfile/1_2_5_3'
+      } do
         expect { download }.to output("Downloading #{uri}\nDownloading is finished\n").to_stdout
       end
     end

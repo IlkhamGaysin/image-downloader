@@ -3,6 +3,21 @@
 require 'spec_helper'
 
 RSpec.describe SimpleImagesDownloader::Configuration do
+  describe SimpleImagesDownloader::Configuration::REQUEST_OPTIONS do
+    subject(:options) { described_class }
+
+    let(:expected_value) do
+      {
+        'User-Agent' => "SimpleImagesDownloader/#{SimpleImagesDownloader::VERSION}",
+        redirect: false,
+        open_timeout: 30,
+        read_timeout: 30
+      }
+    end
+
+    it { is_expected.to eql(expected_value) }
+  end
+
   describe '.destination' do
     context 'when instance is mocked' do
       let(:destination) { './spec' }

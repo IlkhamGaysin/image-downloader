@@ -33,7 +33,7 @@ Style/Documentation:
   Enabled: false
 
 Style/MethodCalledOnDoEndBlock:
-  Enabled: true
+  Enabled: false
 
 Style/CollectionMethods:
   Enabled: true
