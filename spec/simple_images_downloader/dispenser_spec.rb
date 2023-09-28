@@ -10,14 +10,14 @@ RSpec.describe SimpleImagesDownloader::Dispenser do
     let(:remote_path) { fixtures_path('dispenser-test-moved.png') }
     let(:dispenser)   { described_class.new(source, remote_path) }
 
+    after do
+      source.close!
+      FileUtils.remove_entry_secure(remote_path) if File.exist?(remote_path)
+    end
+
     context 'when source and remote_path are right typed' do
       before do
-        allow(dispenser).to receive(:destination).and_return(remote_path)
-      end
-
-      after do
-        source.close
-        FileUtils.remove_entry_secure(remote_path) if File.exist?(remote_path)
+        allow(dispenser).to receive(:target).and_return(remote_path)
       end
 
       it 'moves source file to destination' do
@@ -26,21 +26,44 @@ RSpec.describe SimpleImagesDownloader::Dispenser do
         place
 
         expect(File).to be_exist(remote_path)
+      ensure
+        source.close!
+        FileUtils.remove_entry_secure(remote_path) if File.exist?(remote_path)
       end
     end
 
     context 'when destination_dir is not writable' do
-      before do
-        allow(dispenser).to receive(:destination_dir).and_return(remote_path)
-        allow(File).to receive(:writiable?).with(remote_path).and_return(false)
-      end
+      let(:destination) { '/usr' }
 
-      after do
-        source.close!
+      before do
+        allow(SimpleImagesDownloader::Configuration).to receive(:destination).and_return(destination)
+        allow(File).to receive(:writable?).with(destination).and_return(false)
       end
 
       it do
-        expect { place }.to raise_error(SimpleImagesDownloader::Errors::DestinationIsNotWritable)
+        expect do
+          place
+        end.to raise_error(
+          SimpleImagesDownloader::Errors::DestinationIsNotWritable,
+          "The destination is not writable move file manually at #{destination}"
+        )
+      end
+    end
+
+    context 'when destination_dir is not directory' do
+      let(:destination) { './Gemfile' }
+
+      before do
+        allow(SimpleImagesDownloader::Configuration).to receive(:destination).and_return(destination)
+      end
+
+      it do
+        expect do
+          place
+        end.to raise_error(
+          SimpleImagesDownloader::Errors::DestinationIsNotDirectory,
+          "The destination - #{destination} is not directory"
+        )
       end
     end
   end

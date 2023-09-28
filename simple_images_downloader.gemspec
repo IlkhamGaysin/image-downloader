@@ -34,7 +34,6 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency 'faker', '~> 2.14'
   spec.add_development_dependency 'pry', '~> 0.13.1'
-  spec.add_development_dependency 'pry-byebug', '~> 3.9.0'
   spec.add_development_dependency 'rake', '~> 12.0'
   spec.add_development_dependency 'rspec', '~> 3.0'
   spec.add_development_dependency 'rspec_junit_formatter', '~> 0.4.1'

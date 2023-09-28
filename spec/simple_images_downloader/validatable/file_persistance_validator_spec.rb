@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-RSpec.describe SimpleImagesDownloader::FilePersistanceValidator do
+RSpec.describe SimpleImagesDownloader::Validatable::FilePersistanceValidator do
   describe '#validate' do
-    subject(:validate) { described_class.new(path).validate }
+    subject(:validate) { described_class.new.validate(path) }
 
     let(:path) { './FilePersistanceValidator' }
 

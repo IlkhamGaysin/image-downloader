@@ -2,13 +2,15 @@
 
 module SimpleImagesDownloader
   class SourceFile
-    def initialize(path, validator = nil)
-      @path      = path
-      @validator = validator || SimpleImagesDownloader::FilePersistanceValidator.new(path)
+    include Validatable
+
+    def initialize(path, validators = [FilePersistanceValidator.new, FileAccessibilityValidator.new])
+      @path       = path
+      @validators = validators
     end
 
     def each_line(&block)
-      @validator.validate
+      validate!(@path)
 
       begin
         file.each(chomp: true, &block)

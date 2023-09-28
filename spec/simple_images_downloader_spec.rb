@@ -2,7 +2,7 @@
 
 RSpec.describe SimpleImagesDownloader do
   it 'has a version number' do
-    expect(SimpleImagesDownloader::VERSION).to eql('1.0.2')
+    expect(SimpleImagesDownloader::VERSION).to eql('1.0.3')
   end
 
   describe '.root' do

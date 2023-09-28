@@ -1,3 +1,9 @@
+## 1.0.3 - 2023-09-27
+- Corrected destination validation in SimpleImagesDownloader::Dispenser
+- Corrected source file validation in SimpleImagesDownloader::SourceFiles
+- Refactored
+- Fixed error message when destination is invalid
+
 ## 1.0.2 - 2020-09-25
 - Refactored SimpleImagesDownloader::Dispenser keeping the same behaviour
 - Updated README

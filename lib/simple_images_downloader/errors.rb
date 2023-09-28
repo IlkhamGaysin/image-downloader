@@ -52,5 +52,19 @@ module SimpleImagesDownloader
         super(message)
       end
     end
+
+    class DestinationIsNotDirectory < BaseError
+      def initialize(path)
+        message = "The destination - #{path} is not directory"
+        super(message)
+      end
+    end
+
+    class PermissionsError < BaseError
+      def initialize(path)
+        message = "Couldn't read file #{path} due to permissions error"
+        super(message)
+      end
+    end
   end
 end

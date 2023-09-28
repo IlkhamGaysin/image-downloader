@@ -7,14 +7,15 @@ RSpec.describe SimpleImagesDownloader::Line do
     let(:string) { Faker::Placeholdit.image }
 
     context 'when string is valid url and has valid extension' do
-      let(:image_path_validator) { instance_double('SimpleImagesDownloader::ImagePathValidator') }
+      let(:image_path_validator) { instance_double('SimpleImagesDownloader::Validatable::ImagePathValidator') }
 
       it 'returns instance of URI' do
         expect(uri).to eql(URI(string))
       end
 
-      it 'calls #validate on instance of SimpleImagesDownloader::ImagePathValidator' do
-        expect(SimpleImagesDownloader::ImagePathValidator).to receive(:new).and_return(image_path_validator).once
+      it 'calls #validate on instance of SimpleImagesDownloader::Validatable::ImagePathValidator' do
+        expect(SimpleImagesDownloader::Validatable::ImagePathValidator)
+          .to receive(:new).and_return(image_path_validator).once
         expect(image_path_validator).to receive(:validate).once
 
         uri
@@ -25,7 +26,12 @@ RSpec.describe SimpleImagesDownloader::Line do
       let(:string) { nil }
 
       it do
-        expect { uri }.to raise_error(SimpleImagesDownloader::Errors::BadUrl)
+        expect do
+          uri
+        end.to raise_error(
+          SimpleImagesDownloader::Errors::BadUrl,
+          'The is not valid URL '
+        )
       end
     end
   end

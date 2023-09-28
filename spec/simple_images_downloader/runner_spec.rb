@@ -22,7 +22,12 @@ RSpec.describe SimpleImagesDownloader::Runner do
       end
 
       it do
-        expect { described_class.invoke }.to raise_error(SimpleImagesDownloader::Errors::MissingFileArgumentError)
+        expect do
+          described_class.invoke
+        end.to raise_error(
+          SimpleImagesDownloader::Errors::MissingFileArgumentError,
+          'First arguments must be file'
+        )
       end
     end
   end
