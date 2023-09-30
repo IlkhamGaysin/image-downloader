@@ -17,14 +17,14 @@ module SimpleImagesDownloader
       #
       # @param options [Hash] hash with path to file and io object. Example: { path: './image.jpg', io: StringIO }
       # @raise [Errors::BadMimeType] if mime type is not valid
-      # @see Configuration::DEFAULT_VALID_MIME_TYPES_MAP to see default valid mime types or add your own
+      # @see Configuration::DEFAULT_VALID_MIME_TYPES to see default valid mime types or add your own
       def validate(options)
         path = options[:path]
         io   = options[:io]
 
         mime_type = mime_type_of(io)
 
-        return if Configuration::DEFAULT_VALID_MIME_TYPES_MAP[mime_type]
+        return if SimpleImagesDownloader::Configuration.valid_mime_types.include?(mime_type)
 
         raise Errors::BadMimeType.new(path, mime_type)
       end

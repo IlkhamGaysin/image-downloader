@@ -60,5 +60,32 @@ RSpec.describe SimpleImagesDownloader::Strategies::FromFileStrategy do
         expect(image.size).to be(5795)
       end
     end
+
+    context 'when there is a non image url which mime type is allowed' do
+      let(:line_1) { "https://simple-images-downloader.s3.eu-west-3.amazonaws.com/text.txt\n" }
+
+      before do
+        SimpleImagesDownloader::Configuration.valid_mime_types = ['text/plain', 'image/png']
+      end
+
+      after do
+        SimpleImagesDownloader::Configuration
+          .valid_mime_types = SimpleImagesDownloader::Configuration::DEFAULT_VALID_MIME_TYPES
+      end
+
+      it 'downloads image and text file' do
+        expect(fixtures_files('image-fetcher/*.*')).to be_empty
+
+        process
+
+        expect(fixtures_files('image-fetcher/*.*')).to contain_exactly(an_instance_of(String), an_instance_of(String))
+
+        image = File.open(fixtures_files('image-fetcher/*.png').first)
+        text  = File.open(fixtures_files('image-fetcher/*.txt').first)
+
+        expect(image.size).to be(5795)
+        expect(text.size).to be(4)
+      end
+    end
   end
 end
