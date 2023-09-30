@@ -2,22 +2,31 @@
 
 module SimpleImagesDownloader
   class Downloader
-    def initialize(uri)
-      @uri = uri
+    include Validatable
+
+    def initialize(uri, client = Client.new, validators = [MimeTypeValidator.new])
+      @uri        = uri
+      @client     = client
+      @validators = validators
     end
 
     def download
       puts "Downloading #{@uri}"
 
-      io = Client.new.open(@uri)
+      io = @client.open(@uri)
 
-      downloaded_file = StringioToTempfile.convert(io) unless io.nil?
+      raise Errors::EmptyResponse, @uri if io.nil?
 
-      Dispenser.new(downloaded_file, @uri.path).place
+      validate!({ path: @uri.to_s, io: io })
+
+      tempfile = StringioToTempfile.convert(io)
+
+      Dispenser.new(tempfile, @uri.path).place
 
       puts 'Downloading is finished'
     ensure
-      downloaded_file&.close
+      io&.close
+      tempfile&.close
     end
   end
 end

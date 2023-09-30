@@ -29,7 +29,7 @@ RSpec.describe SimpleImagesDownloader::Downloader do
       let(:dispenser) { instance_double('SimpleImagesDownloader::Dispenser') }
 
       let(:uri) do
-        URI.parse('https://test-for-image-fetcher.s3.eu-central-1.amazonaws.com/less_than_10kb.png')
+        URI.parse('https://simple-images-downloader.s3.eu-west-3.amazonaws.com/less_than_10kb.png')
       end
 
       before do
@@ -82,16 +82,21 @@ RSpec.describe SimpleImagesDownloader::Downloader do
 
     context 'when Dispenser raises an error' do
       let(:uri) do
-        URI.parse('https://test-for-image-fetcher.s3.eu-central-1.amazonaws.com/7.5MB.jpg')
+        URI.parse('https://simple-images-downloader.s3.eu-west-3.amazonaws.com/7.5MB.jpg')
       end
       let(:downloader)      { described_class.new(uri) }
+      let(:stringio)        { StringIO.new }
       let(:downloaded_file) { Tempfile.new(['downloader-test', SimpleImagesDownloader::Configuration.destination]) }
       let(:dispenser)       { instance_double('SimpleImagesDownloader::Dispenser') }
 
       before do
         client = instance_double('SimpleImagesDownloader::Client')
+        validator = instance_double('SimpleImagesDownloader::Validatable::MimeTypeValidator')
+
+        allow(SimpleImagesDownloader::Validatable::MimeTypeValidator).to receive(:new).and_return(validator)
+        allow(validator).to receive(:validate).and_return(true)
         allow(SimpleImagesDownloader::Client).to receive(:new).and_return(client)
-        allow(client).to receive(:open).and_return(downloaded_file)
+        allow(client).to receive(:open).and_return(stringio)
         allow(SimpleImagesDownloader::StringioToTempfile).to receive(:convert).and_return(downloaded_file)
         allow(SimpleImagesDownloader::Dispenser)
           .to receive(:new).with(an_instance_of(Tempfile), uri.path).and_return(dispenser)
@@ -103,6 +108,12 @@ RSpec.describe SimpleImagesDownloader::Downloader do
 
         expect { downloader.download }.to raise_error(SimpleImagesDownloader::Errors::BaseError)
       end
+
+      it 'ensures stringio is closed' do
+        expect(stringio).to receive(:close)
+
+        expect { downloader.download }.to raise_error(SimpleImagesDownloader::Errors::BaseError)
+      end
     end
 
     context 'when downloaded file is Tempfile' do
@@ -111,7 +122,7 @@ RSpec.describe SimpleImagesDownloader::Downloader do
       let(:dispenser) { instance_double('SimpleImagesDownloader::Dispenser') }
 
       let(:uri) do
-        URI.parse('https://test-for-image-fetcher.s3.eu-central-1.amazonaws.com/7.5MB.jpg')
+        URI.parse('https://simple-images-downloader.s3.eu-west-3.amazonaws.com/7.5MB.jpg')
       end
 
       before do
@@ -149,6 +160,23 @@ RSpec.describe SimpleImagesDownloader::Downloader do
         cassette_name: '/SimpleImagesDownloader_Downloader/_download/when_downloaded_file_is_Tempfile/1_2_5_3'
       } do
         expect { download }.to output("Downloading #{uri}\nDownloading is finished\n").to_stdout
+      end
+    end
+
+    context 'when downloaded file is nil' do
+      subject(:download) { described_class.new(uri, client).download }
+
+      let(:uri) { URI.parse('http://github.com') }
+      let(:client) { instance_double('SimpleImagesDownloader::Client') }
+
+      before do
+        allow(client).to receive(:open).and_return(nil)
+      end
+
+      it 'raises EmptyResponse' do
+        expect { download }.to raise_error(
+          SimpleImagesDownloader::Errors::EmptyResponse, "Nothing returned from request #{uri}"
+        )
       end
     end
   end

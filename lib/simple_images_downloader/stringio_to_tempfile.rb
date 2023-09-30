@@ -9,8 +9,6 @@ module SimpleImagesDownloader
 
       IO.copy_stream(stringio, tempfile)
 
-      stringio.close
-
       OpenURI::Meta.init tempfile, stringio
 
       tempfile

@@ -33,7 +33,7 @@ Or install it yourself as:
 
 The gem is provided with executable.
 
-You can either run plain commmand with file containing list of url:
+You can either run plain command with file containing list of url:
 
 ```bash
 simple-images-downloader <path_to_file>
@@ -67,6 +67,7 @@ Downloading https://test-for-simple-images-downloader.s3.eu-central-1.amazonaws.
 Downloading is finished
 ```
 
+## Configuration
 **By default the images stored in a directory the script is run.**
 You can also configure the place where the images would be stored to:
 
@@ -78,6 +79,18 @@ You can also configure the place where the images would be stored to:
 [2] pry(main)* end
 ```
 
+**By default the gem downloads only images with mime types: image/avif, image/gif, image/apng, image/jpg, image/jpeg, image/png, image/svg+xml, image/webp.**
+You can also configure the mime types to download images with:
+
+
+```ruby
+[1] pry(main)> require 'simple_images_downloader'
+
+[2] pry(main)> SimpleImagesDownloader::Configuration.configure do  |config|
+[2] pry(main)*   # You must use RFC 1341 - MIME (Multipurpose Internet Mail Extensions) format
+[2] pry(main)*   config.valid_mime_types = %w(image/png image/jpg image/jpeg)
+[2] pry(main)* end
+```
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.

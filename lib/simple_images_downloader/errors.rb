@@ -25,9 +25,9 @@ module SimpleImagesDownloader
       end
     end
 
-    class MissingImageInPath < BaseError
-      def initialize(path)
-        message = "The path doesn't contain image #{path}"
+    class BadMimeType < BaseError
+      def initialize(path, mime_type)
+        message = "The image with path: #{path} has wrong mime type #{mime_type}"
         super(message)
       end
     end
@@ -63,6 +63,13 @@ module SimpleImagesDownloader
     class PermissionsError < BaseError
       def initialize(path)
         message = "Couldn't read file #{path} due to permissions error"
+        super(message)
+      end
+    end
+
+    class EmptyResponse < BaseError
+      def initialize(uri)
+        message = "Nothing returned from request #{uri}"
         super(message)
       end
     end

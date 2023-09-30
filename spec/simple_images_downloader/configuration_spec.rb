@@ -18,6 +18,25 @@ RSpec.describe SimpleImagesDownloader::Configuration do
     it { is_expected.to eql(expected_value) }
   end
 
+  describe SimpleImagesDownloader::Configuration::DEFAULT_VALID_MIME_TYPES_MAP do
+    subject(:default_valid_extensions) { described_class }
+
+    let(:expected_value) do
+      {
+        'image/avif' => true,
+        'image/gif' => true,
+        'image/apng' => true,
+        'image/jpg' => true,
+        'image/jpeg' => true,
+        'image/png' => true,
+        'image/svg+xml' => true,
+        'image/webp' => true
+      }
+    end
+
+    it { is_expected.to eq(expected_value) }
+  end
+
   describe '.destination' do
     context 'when instance is mocked' do
       let(:destination) { './spec' }

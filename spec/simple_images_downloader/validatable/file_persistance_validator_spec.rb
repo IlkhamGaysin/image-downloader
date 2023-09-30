@@ -2,7 +2,7 @@
 
 RSpec.describe SimpleImagesDownloader::Validatable::FilePersistanceValidator do
   describe '#validate' do
-    subject(:validate) { described_class.new.validate(path) }
+    subject(:validate) { described_class.new.validate({ path: path }) }
 
     let(:path) { './FilePersistanceValidator' }
 

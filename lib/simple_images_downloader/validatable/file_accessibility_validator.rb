@@ -3,10 +3,10 @@
 module SimpleImagesDownloader
   module Validatable
     class FileAccessibilityValidator < Validator
-      def validate(path)
-        return if File.readable?(path)
+      def validate(options)
+        return if File.readable?(options[:path])
 
-        raise Errors::PermissionsError, path
+        raise Errors::PermissionsError, options[:path]
       end
     end
   end

@@ -10,7 +10,7 @@ module SimpleImagesDownloader
     end
 
     def each_line(&block)
-      validate!(@path)
+      validate!({ path: @path })
 
       begin
         file.each(chomp: true, &block)

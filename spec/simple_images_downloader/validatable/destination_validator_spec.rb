@@ -2,7 +2,7 @@
 
 RSpec.describe SimpleImagesDownloader::Validatable::DestinationValidator do
   describe '#validate' do
-    subject(:validate) { described_class.new.validate(destination) }
+    subject(:validate) { described_class.new.validate({ path: destination }) }
 
     context 'when destination_dir is not writable' do
       let(:destination) { '/usr' }

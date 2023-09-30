@@ -30,12 +30,13 @@ RSpec.describe SimpleImagesDownloader::Errors do
     end
   end
 
-  describe SimpleImagesDownloader::Errors::MissingImageInPath do
-    let(:path) { '/test/test-image.png' }
+  describe SimpleImagesDownloader::Errors::BadMimeType do
+    let(:path) { '/test/test-image.text' }
+    let(:mime_type) { 'text/plain' }
 
     it 'has custom message' do
-      expect { raise described_class, path }
-        .to raise_error(described_class, "The path doesn't contain image #{path}")
+      expect { raise described_class.new(path, mime_type) }
+        .to raise_error(described_class, "The image with path: #{path} has wrong mime type #{mime_type}")
     end
   end
 
