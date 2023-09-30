@@ -2,11 +2,22 @@
 
 module SimpleImagesDownloader
   module Validatable
+    # MimeTypeValidator class
+    # Responsible for validating mime type of file
+    #
+    # @example
+    #   SimpleImagesDownloader::MimeTypeValidator.new.validate({ path: './image.jpg', io: StringIO.new })
+    #
     class MimeTypeValidator < Validator
       extend Forwardable
 
       def_delegator 'SimpleImagesDownloader::Configuration', :valid_mime_types, :valid_mime_types
 
+      # Validates mime type of file. The mime types are taken from file Configuration
+      #
+      # @param options [Hash] hash with path to file and io object. Example: { path: './image.jpg', io: StringIO }
+      # @raise [Errors::BadMimeType] if mime type is not valid
+      # @see Configuration::DEFAULT_VALID_MIME_TYPES_MAP to see default valid mime types or add your own
       def validate(options)
         path = options[:path]
         io   = options[:io]
@@ -20,7 +31,11 @@ module SimpleImagesDownloader
 
       private
 
-      # Taken from Shrine https://github.com/shrinerb/shrine/blob/master/lib/shrine/plugins/determine_mime_type.rb#L94
+      # Returns mime type of file. Uses UNIX file command
+      #
+      # @see https://github.com/shrinerb/shrine/blob/master/lib/shrine/plugins/determine_mime_type.rb#L94
+      # @param io [IO] io object
+      # @return [String] mime type of file
       def mime_type_of(io)
         Open3.popen3('file --mime-type --brief -') do |stdin, stdout, stderr, thread|
           copy_stream(from: io, to: stdin.binmode)

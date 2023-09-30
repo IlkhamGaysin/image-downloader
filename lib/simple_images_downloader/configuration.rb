@@ -1,6 +1,19 @@
 # frozen_string_literal: true
 
 module SimpleImagesDownloader
+  # Configuration class
+  # @example
+  #   SimpleImagesDownloader::Configuration.configure do |config|
+  #     config.destination = './images'
+  #     config.valid_mime_types = ['image/jpeg', 'image/png']
+  #   end
+  #
+  #   SimpleImagesDownloader::Configuration.destination
+  #   # => './images'
+  #
+  #   SimpleImagesDownloader::Configuration.valid_mime_types
+  #   # => ['image/jpeg', 'image/png']
+  #
   class Configuration
     include Singleton
 
@@ -37,12 +50,29 @@ module SimpleImagesDownloader
       @valid_mime_types = DEFAULT_VALID_MIME_TYPES_MAP.keys
     end
 
+    # Allows to set valid_mime_types to check against allowed mime types
+    #
+    # @param value [Array] Array of valid mime types followed by
+    # RFC 1341 - MIME (Multipurpose Internet Mail Extensions) format
+    # @raise [BaseError] if value is not an Array
+    #
     def valid_mime_types=(value)
       raise BaseError, 'valid_mime_types must be an array' unless value.is_a?(Array)
 
       @valid_mime_types = value
     end
 
+    #### Configurable options
+    #
+    # destination: String, default: './', description: 'Destination folder to put downloaded images'
+    # valid_mime_types: Array,
+    # default: [
+    #  'image/avif', 'image/gif', 'image/apng', 'image/jpg',
+    #  'image/jpeg', 'image/png', 'image/svg+xml', 'image/webp'
+    # ], description: 'Valid mime types to download'
+    #
+    # @yield [config] Yields the Configuration object to the block
+    #
     def self.configure
       yield instance
     end

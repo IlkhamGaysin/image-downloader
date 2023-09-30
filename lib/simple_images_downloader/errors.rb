@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 module SimpleImagesDownloader
+  # Errors module
+  # Responsible for storing all errors
+  #
   module Errors
     class BaseError < StandardError; end
 
