@@ -6,6 +6,7 @@ module SimpleImagesDownloader
 
     ACCESSORS = %i[
       destination
+      valid_mime_types
     ].freeze
 
     REQUEST_OPTIONS = {
@@ -15,10 +16,31 @@ module SimpleImagesDownloader
       read_timeout: 30
     }.freeze
 
+    # https://developer.mozilla.org/en-US/docs/Web/Media/Formats/Image_types#common_image_file_types
+    DEFAULT_VALID_MIME_TYPES_MAP = {
+      'image/avif' => true,
+      'image/gif' => true,
+      'image/apng' => true,
+      'image/jpg' => true,
+      'image/jpeg' => true,
+      'image/png' => true,
+      'image/svg+xml' => true,
+      'image/webp' => true
+    }.freeze
+
+    DEFAULT_DESTINATION = './'
+
     attr_accessor(*ACCESSORS)
 
     def initialize
-      @destination = './'
+      @destination = DEFAULT_DESTINATION
+      @valid_mime_types = DEFAULT_VALID_MIME_TYPES_MAP.keys
+    end
+
+    def valid_mime_types=(value)
+      raise BaseError, 'valid_mime_types must be an array' unless value.is_a?(Array)
+
+      @valid_mime_types = value
     end
 
     def self.configure

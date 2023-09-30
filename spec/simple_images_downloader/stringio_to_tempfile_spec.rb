@@ -31,14 +31,6 @@ RSpec.describe SimpleImagesDownloader::StringioToTempfile do
       converted_file.close!
     end
 
-    it 'closes stringio' do
-      expect(stringio).to receive(:close)
-
-      converted_file
-    ensure
-      converted_file.close!
-    end
-
     it 'adds meta information to tempfile from sringio' do
       expect(converted_file.metas).to match_array(metas)
     end

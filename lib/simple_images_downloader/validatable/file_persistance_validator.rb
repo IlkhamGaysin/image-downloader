@@ -3,10 +3,10 @@
 module SimpleImagesDownloader
   module Validatable
     class FilePersistanceValidator < Validator
-      def validate(path)
-        return if File.exist?(path)
+      def validate(options)
+        return if File.exist?(options[:path])
 
-        raise Errors::MissingFileError, path
+        raise Errors::MissingFileError, options[:path]
       end
     end
   end

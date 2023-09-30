@@ -14,7 +14,7 @@ module SimpleImagesDownloader
     end
 
     def place
-      validate!(destination_dir)
+      validate!({ path: destination_dir })
 
       FileUtils.mv @source, target
     end

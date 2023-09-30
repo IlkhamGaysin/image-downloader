@@ -3,9 +3,11 @@
 module SimpleImagesDownloader
   module Validatable
     class DestinationValidator < Validator
-      def validate(destination_dir)
-        raise Errors::DestinationIsNotDirectory, destination_dir unless File.directory?(destination_dir)
-        raise Errors::DestinationIsNotWritable, destination_dir unless File.writable?(destination_dir)
+      def validate(options)
+        path = options[:path]
+
+        raise Errors::DestinationIsNotDirectory, path unless File.directory?(path)
+        raise Errors::DestinationIsNotWritable, path unless File.writable?(path)
       end
     end
   end
