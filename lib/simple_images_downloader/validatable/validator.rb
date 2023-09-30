@@ -2,6 +2,8 @@
 
 module SimpleImagesDownloader
   module Validatable
+    # Validator class
+    # Responsible for defining interface for validators
     class Validator
       def validate(_value)
         raise NotImplementedError, 'must be implemented in subclass'
