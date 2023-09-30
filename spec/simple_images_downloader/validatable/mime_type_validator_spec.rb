@@ -19,6 +19,33 @@ RSpec.describe SimpleImagesDownloader::Validatable::MimeTypeValidator do
       end
     end
 
+    context 'when custom mime type is passed to configuration' do
+      let(:image_path) { File.join(SimpleImagesDownloader.root, 'spec', 'fixtures', 'text.txt') }
+      let(:options) { { path: image_path, io: File.open(image_path, 'rb') } }
+
+      before do
+        SimpleImagesDownloader::Configuration.configure do |config|
+          config.valid_mime_types = ['text/plain']
+        end
+      end
+
+      after do
+        SimpleImagesDownloader::Configuration.configure do |config|
+          config.valid_mime_types = SimpleImagesDownloader::Configuration::DEFAULT_VALID_MIME_TYPES
+        end
+      end
+
+      it 'does not raise an error' do
+        expect { validator.validate(options) }.not_to raise_error
+      end
+
+      it 'returns text/plain' do
+        expect(validator).to receive(:mime_type_of).and_return('text/plain').once
+
+        validator.validate(options)
+      end
+    end
+
     context 'when mime type is invalid' do
       let(:text_file_path) { File.join(SimpleImagesDownloader.root, 'spec', 'fixtures', 'text.txt') }
       let(:options) { { path: text_file_path, io: File.open(text_file_path, 'rb') } }

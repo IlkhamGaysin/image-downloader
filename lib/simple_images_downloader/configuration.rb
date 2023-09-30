@@ -30,16 +30,16 @@ module SimpleImagesDownloader
     }.freeze
 
     # https://developer.mozilla.org/en-US/docs/Web/Media/Formats/Image_types#common_image_file_types
-    DEFAULT_VALID_MIME_TYPES_MAP = {
-      'image/avif' => true,
-      'image/gif' => true,
-      'image/apng' => true,
-      'image/jpg' => true,
-      'image/jpeg' => true,
-      'image/png' => true,
-      'image/svg+xml' => true,
-      'image/webp' => true
-    }.freeze
+    DEFAULT_VALID_MIME_TYPES = [
+      'image/avif',
+      'image/gif',
+      'image/apng',
+      'image/jpg',
+      'image/jpeg',
+      'image/png',
+      'image/svg+xml',
+      'image/webp'
+    ].freeze
 
     DEFAULT_DESTINATION = './'
 
@@ -47,7 +47,7 @@ module SimpleImagesDownloader
 
     def initialize
       @destination = DEFAULT_DESTINATION
-      @valid_mime_types = DEFAULT_VALID_MIME_TYPES_MAP.keys
+      @valid_mime_types = DEFAULT_VALID_MIME_TYPES
     end
 
     # Allows to set valid_mime_types to check against allowed mime types
@@ -57,7 +57,7 @@ module SimpleImagesDownloader
     # @raise [BaseError] if value is not an Array
     #
     def valid_mime_types=(value)
-      raise BaseError, 'valid_mime_types must be an array' unless value.is_a?(Array)
+      raise Errors::BaseError, 'valid_mime_types must be an array' unless value.is_a?(Array)
 
       @valid_mime_types = value
     end

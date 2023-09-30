@@ -1,3 +1,7 @@
+## 1.1.1 - 2023-09-30
+- Fixed setting of mime types from configuration. It was using default values instead of the ones set in the configuration
+- Added documentation to classes and methods
+
 ## 1.1.0 - 2023-09-30
 - Add validation of downloaded content over path validation
 - Add ability to extend mime types from configuration

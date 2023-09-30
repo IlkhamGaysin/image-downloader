@@ -18,20 +18,20 @@ RSpec.describe SimpleImagesDownloader::Configuration do
     it { is_expected.to eql(expected_value) }
   end
 
-  describe SimpleImagesDownloader::Configuration::DEFAULT_VALID_MIME_TYPES_MAP do
+  describe SimpleImagesDownloader::Configuration::DEFAULT_VALID_MIME_TYPES do
     subject(:default_valid_extensions) { described_class }
 
     let(:expected_value) do
-      {
-        'image/avif' => true,
-        'image/gif' => true,
-        'image/apng' => true,
-        'image/jpg' => true,
-        'image/jpeg' => true,
-        'image/png' => true,
-        'image/svg+xml' => true,
-        'image/webp' => true
-      }
+      [
+        'image/avif',
+        'image/gif',
+        'image/apng',
+        'image/jpg',
+        'image/jpeg',
+        'image/png',
+        'image/svg+xml',
+        'image/webp'
+      ]
     end
 
     it { is_expected.to eq(expected_value) }
@@ -54,6 +54,19 @@ RSpec.describe SimpleImagesDownloader::Configuration do
     context 'when instance is not mocked' do
       it 'returns default destination' do
         expect(described_class.destination).to eql('./')
+      end
+    end
+  end
+
+  describe '.valid_mime_types' do
+    it 'returns default valid mime types map' do
+      expect(described_class.valid_mime_types).to eql(described_class::DEFAULT_VALID_MIME_TYPES)
+    end
+
+    context 'when non array is passed' do
+      it 'raises BaseError error' do
+        expect { described_class.valid_mime_types = 'string' }
+          .to raise_error(SimpleImagesDownloader::Errors::BaseError)
       end
     end
   end
