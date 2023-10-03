@@ -2,6 +2,11 @@
 
 module SimpleImagesDownloader
   module Strategies
+    # Strategy for downloading images from file
+    # Opens file and reads line by line and downloads images
+    #
+    # @example
+    #   SimpleImagesDownloader::Strategies::FromFileStrategy.new('path/to/file').process
     class FromFileStrategy < Strategy
       def initialize(path)
         super

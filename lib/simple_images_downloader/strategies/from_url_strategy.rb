@@ -2,7 +2,13 @@
 
 module SimpleImagesDownloader
   module Strategies
+    # Strategy for downloading images from url
+    # Downloads image from url
+    #
+    # @example
+    #   SimpleImagesDownloader::Strategies::FromUrlStrategy.new('https://example.com/image.jpg').process
     class FromUrlStrategy < Strategy
+      # @param url [String] url to image
       def initialize(url)
         super
         @url = url
